@@ -19,18 +19,21 @@
 #include "mbed.h"
 #include "TFT_4DGL.h"
 
+// overwrite 4DGL library screen size settings in TFT_4DGL.h
+#define SIZE_X  479
+#define SIZE_Y  639
+//
+
 TFT_4DGL ecran(p9,p10,p11); // serial tx, serial rx, reset pin;
 
 int main() {
-    char s[500];
-    int x = 0, y = 0, status, xc = 0, yc = 0;
-    
- 
+//    char s[500];
+//    int x = 0, y = 0, status, xc = 0, yc = 0;
+
     ecran.baudrate(115200);
-// new code to set resolution to 640 by 480
-// also changed max size_x and size_y in TFT_4DGL_graphics.h
-// Screen_res command is 12 decimal and not 12hex as listed in manual
-    ecran.display_control(SCREEN_RES, char(1));
+// added - Set Display to 640 by 480 mode
+    ecran.display_control(0x0c, 0x01);
+//
     ecran.background_color(DGREY);
     ecran.circle(120, 160, 80, 0xFF00FF);
     ecran.triangle(120, 100, 40, 300, 200, 270, 0x0000FF);
@@ -51,7 +54,7 @@ int main() {
     ecran.text_string("This is a test of string", 2, 12, FONT_8X8, WHITE);
     ecran.graphic_string("This is a test of graphic string", 20, 200, FONT_8X8, WHITE, 2, 2);
     ecran.text_button("OK", UP, 40, 260, 0xFF0000, FONT_8X8, BLACK, 2, 2);
-// demo code deleted here for touch screen - no touch screen on uVGA II
 
- 
+  // delete touch screen demo - no touch on uVGA II
+
 }
