@@ -17,44 +17,31 @@
 // along with TFT_4DGL.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mbed.h"
-#include "TFT_4DGL.h"
+#include "uLCD_4DGL.h"
 
-// overwrite 4DGL library screen size settings in TFT_4DGL.h
-#define SIZE_X  479
-#define SIZE_Y  639
+#define SIZE_X  128
+#define SIZE_Y  128
 //
 
-TFT_4DGL ecran(p9,p10,p11); // serial tx, serial rx, reset pin;
+uLCD_4DGL uLCD(p9,p10,p11); // serial tx, serial rx, reset pin;
 
-int main() {
-//    char s[500];
-//    int x = 0, y = 0, status, xc = 0, yc = 0;
+int main()
+{
 
-    ecran.baudrate(115200);
-// added - Set Display to 640 by 480 mode
-    ecran.display_control(0x0c, 0x01);
-//
-    ecran.background_color(DGREY);
-    ecran.circle(120, 160, 80, 0xFF00FF);
-    ecran.triangle(120, 100, 40, 300, 200, 270, 0x0000FF);
-    ecran.line(0, 0, 239, 319, 0xFF0000);
-    ecran.rectangle(50, 50, 200, 90, 0x00FF00);
-    ecran.ellipse(100, 250, 80, 30, 0xFFFF00);
-    ecran.pixel(120, 160, BLACK);
-    ecran.read_pixel(120, 170);
-    ecran.screen_copy(50, 50, 200, 200, 100, 100);
-    ecran.pen_size(WIREFRAME);
-    ecran.circle(120, 160, 60, BLACK);
-    ecran.set_font(FONT_8X8);
-    ecran.text_mode(TRANSPARENT);
-    ecran.text_char('B', 9, 8, BLACK);
-    ecran.text_char('I',10, 8, BLACK);
-    ecran.text_char('G',11, 8, BLACK);
-    ecran.graphic_char('G', 120, 120, BLACK, 4, 4);
-    ecran.text_string("This is a test of string", 2, 12, FONT_8X8, WHITE);
-    ecran.graphic_string("This is a test of graphic string", 20, 200, FONT_8X8, WHITE, 2, 2);
-    ecran.text_button("OK", UP, 40, 260, 0xFF0000, FONT_8X8, BLACK, 2, 2);
-
-  // delete touch screen demo - no touch on uVGA II
+    uLCD.baudrate(115200);
+    uLCD.background_color(DGREY);
+    uLCD.circle(60, 50, 30, 0xFF00FF);
+    uLCD.triangle(120, 100, 40, 40, 10, 100, 0x0000FF);
+    uLCD.line(0, 0, 80, 60, 0xFF0000);
+    uLCD.rectangle(50, 50, 100, 90, 0x00FF00);
+    uLCD.pixel(60, 60, BLACK);
+    uLCD.read_pixel(120, 70);
+    uLCD.circle(120, 60, 10, BLACK);
+    uLCD.set_font(FONT_8X8);
+    uLCD.text_mode(TRANSPARENT);
+    uLCD.text_char('B', 9, 8, BLACK);
+    uLCD.text_char('I',10, 8, BLACK);
+    uLCD.text_char('G',11, 8, BLACK);
+    uLCD.text_string("This is a test of string", 1, 14, FONT_5X7, WHITE);
 
 }
