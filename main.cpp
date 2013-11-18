@@ -27,6 +27,7 @@ uLCD_4DGL uLCD(p9,p10,p11); // serial tx, serial rx, reset pin;
 
 int main()
 {
+    int pixelcolors[400];
     // basic printf demo = 16 by 18 characters on screen
     uLCD.printf("\nHello uLCD World\n"); //Default Green on black text
     uLCD.printf("\n  Starting Demo...");
@@ -70,6 +71,14 @@ int main()
         uLCD.printf("TxtLine %2D Page %D\n",i%16,i/16 );
         i++; //16 lines with 18 charaters per line
     }
+//draw an image pixel by BLIT (Block Image Transfer)
+    uLCD.background_color(BLACK);
+    uLCD.cls();
+    for(int i=0; i<400; i++) {
+        pixelcolors[i] = RED;
+    }
+    uLCD.BLIT(50, 50, 20, 20, &pixelcolors[0]);
+    wait(5);
 //draw an image pixel by pixel
     uLCD.background_color(BLACK);
     uLCD.cls();
