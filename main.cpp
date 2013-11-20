@@ -27,7 +27,7 @@ uLCD_4DGL uLCD(p9,p10,p11); // serial tx, serial rx, reset pin;
 
 int main()
 {
-    int pixelcolors[400];
+    int pixelcolors[40][40];
     // basic printf demo = 16 by 18 characters on screen
     uLCD.printf("\nHello uLCD World\n"); //Default Green on black text
     uLCD.printf("\n  Starting Demo...");
@@ -71,13 +71,15 @@ int main()
         uLCD.printf("TxtLine %2D Page %D\n",i%16,i/16 );
         i++; //16 lines with 18 charaters per line
     }
-//draw an image pixel by BLIT (Block Image Transfer)
+//draw an image using BLIT (Block Image Transfer) fastest way to transfer pixel data
     uLCD.background_color(BLACK);
     uLCD.cls();
-    for(int i=0; i<400; i++) {
-        pixelcolors[i] = RED;
+    for(int i=0; i<40; i++) {
+        for(int k=0; k<40; k++) {
+            pixelcolors[i][k] = RED;
+        }
     }
-    uLCD.BLIT(50, 50, 20, 20, &pixelcolors[0]);
+    uLCD.BLIT(50, 50, 40, 40, &pixelcolors[0][0]);
     wait(5);
 //draw an image pixel by pixel
     uLCD.background_color(BLACK);
@@ -110,7 +112,34 @@ int main()
                 Z_im = 2*Z_re*Z_im + c_im;
                 Z_re = Z_re2 - Z_im2 + c_re;
             }
-            if(isInside==false) uLCD.pixel(x,y,((niterations & 0xFC0)<<14)+((niterations & 0x38)<<9)+((niterations & 0x07)<<5) );
+            if(isInside==false) uLCD.pixel(x,y,((niterations & 0xF00)<<12)+((niterations & 0xF0)<<8)+((niterations & 0x0F)<<4) );
         }
+    }
+    wait(5);
+    // PLASMA wave BLIT animation
+    uLCD.cls();
+    int num_cols=40;
+    int num_rows=40;
+    double a,b,c=0.0;
+    while(1) {
+        for (int k=0; k<num_cols; k++) {
+            b= (1+sin(3.14159*k*0.75/(num_cols-1.0)+c))*0.5;
+            for (int i=0; i<num_rows; i++) {
+                a= (1+sin(3.14159*i*0.75/(num_rows-1.0)+c))*0.5;
+                // a and b will be a sine wave output between 0 and 1
+                // sine wave was scaled for nice effect across array
+                // uses a and b to compute pixel colors based on rol and col location in array
+                // also keeps colors at the same brightness level
+                if ((a+b) <.667)
+                    pixelcolors[i][k] =  (255-(int(240.0*((a+b)/0.667)))<<16) | (int(240.0*((a+b)/0.667))<<8) | 0;
+                else if ((a+b)<1.333)
+                    pixelcolors[i][k] = (0 <<16) | (255-(int (240.0*((a+b-0.667)/0.667)))<<8) | int(240.0*((a+b-0.667)/0.667));
+                else
+                    pixelcolors[i][k] = (int(255*((a+b-1.333)/0.667))<<16) | (0<<8)  | (255-(int (240.0*((a+b-1.333)/0.667))));
+            }
+        }
+        uLCD.BLIT(50, 50, 40, 40, &pixelcolors[0][0]);
+        c = c + 0.0314159*3.0;
+        if (c > 6.2831) c = 0.0;
     }
 }
