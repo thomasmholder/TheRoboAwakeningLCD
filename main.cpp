@@ -1,5 +1,5 @@
 //
-// TFT_4DGL is a class to drive 4D Systems TFT touch screens
+// TFT_4DGL is a class to drive 4D Systems LCD screens
 //
 // Copyright (C) <2010> Stephane ROCHON <stephane.rochon at free.fr>
 //
@@ -39,10 +39,30 @@ int main()
         uLCD.printf("%2D",i);
         wait(.5);
     }
+
     uLCD.cls();
+
+    uLCD.printf("Change baud rate......");
     uLCD.baudrate(600000); //jack up baud rate to max for fast display
     //if demo hangs here - try lower baud rates
+    // printf text only full screen mode demo
+    uLCD.background_color(BLUE);
+    uLCD.cls();
+    uLCD.locate(0,0);
+    uLCD.color(WHITE);
+    uLCD.textbackground_color(BLUE);
+    uLCD.set_font(FONT_7X8);
+    uLCD.text_mode(OPAQUE);
+    int i=0;
+    while(i<64) {
+        if(i%16==0) uLCD.cls();
+        uLCD.printf("TxtLine %2D Page %D\n",i%16,i/16 );
+        i++; //16 lines with 18 charaters per line
+    }
+    wait(0.5);
     //demo graphics commands
+    uLCD.background_color(BLACK);
+    uLCD.cls();
     uLCD.background_color(DGREY);
     uLCD.circle(60, 50, 30, 0xFF00FF);
     uLCD.triangle(120, 100, 40, 40, 10, 100, 0x0000FF);
@@ -60,23 +80,10 @@ int main()
     uLCD.text_italic(ON);
     uLCD.text_string("This is a test of string", 1, 4, FONT_7X8, WHITE);
     wait(2);
-    // printf text only mode demo
-    uLCD.background_color(BLUE);
-    uLCD.cls();
-    uLCD.locate(0,0);
-    uLCD.color(WHITE);
-    uLCD.textbackground_color(BLUE);
-    uLCD.set_font(FONT_7X8);
-    uLCD.text_mode(OPAQUE);
-    int i=0;
-    while(i<64) {
-        if(i%16==0) uLCD.cls();
-        uLCD.printf("TxtLine %2D Page %D\n",i%16,i/16 );
-        i++; //16 lines with 18 charaters per line
-    }
-    wait(0.5);
+
 //Bouncing Ball Demo
-    int x=50,y=21,vx=1,vy=1, radius=4;
+    float fx=50.0,fy=21.0,vx=1.0,vy=0.4;
+    int x=50,y=21,radius=4;
     uLCD.background_color(BLACK);
     uLCD.cls();
     //draw walls
@@ -84,19 +91,21 @@ int main()
     uLCD.line(127, 0, 127, 127, WHITE);
     uLCD.line(127, 127, 0, 127, WHITE);
     uLCD.line(0, 127, 0, 0, WHITE);
-    for (int i=0; i<1000; i++) {
+    for (int i=0; i<1500; i++) {
         //draw ball
         uLCD.circle(x, y, radius, RED);
-        //bounce off edge walls?
-        if ((x<=radius+1) || (x>=126-radius)) vx = -vx;
-        if ((y<=radius+1) || (y>=126-radius)) vy = -vy;
+        //bounce off edge walls and slow down a bit?
+        if ((x<=radius+1) || (x>=126-radius)) vx = -.90*vx;
+        if ((y<=radius+1) || (y>=126-radius)) vy = -.90*vy;
         //erase old ball location
         uLCD.circle(x, y, radius, BLACK);
         //move ball
-        x=x+vx;
-        y=y+vy;
+        fx=fx+vx;
+        fy=fy+vy;
+        x=(int)fx;
+        y=(int)fy;
     }
-    wait(1);
+    wait(0.5);
 //draw an image pixel by pixel
     int pixelcolors[50][50];
     uLCD.background_color(BLACK);
@@ -112,7 +121,7 @@ int main()
     double MaxIm = MinIm+(MaxRe-MinRe)*ImageHeight/ImageWidth;
     double Re_factor = (MaxRe-MinRe)/(ImageWidth-1);
     double Im_factor = (MaxIm-MinIm)/(ImageHeight-1);
-    unsigned MaxIterations = 4096;
+    unsigned MaxIterations = 2048;
     for(unsigned y=0; y<ImageHeight; ++y) {
         double c_im = MaxIm - y*Im_factor;
         for(unsigned x=0; x<ImageWidth; ++x) {
@@ -138,8 +147,9 @@ int main()
     uLCD.cls();
     int num_cols=50;
     int num_rows=50;
+    int frame=0;
     double a,b,c=0.0;
-    while(1) {
+    while(frame<50) {
         for (int k=0; k<num_cols; k++) {
             b= (1+sin(3.14159*k*0.75/(num_cols-1.0)+c))*0.5;
             for (int i=0; i<num_rows; i++) {
@@ -159,5 +169,22 @@ int main()
         uLCD.BLIT(39, 39, 50, 50, &pixelcolors[0][0]);
         c = c + 0.0314159*3.0;
         if (c > 6.2831) c = 0.0;
+        frame++;
+    }
+    uLCD.cls();
+    //SD card needed with image and video files for last two demos
+    while(1){}  //remove line, if SD card is used
+    uLCD.cls();
+    uLCD.media_init();
+    uLCD.set_sector_address(0x001D, 0x4C01);
+    uLCD.display_image(0,0);
+    wait(10);
+    while(1) {
+        uLCD.cls();
+        uLCD.media_init();
+        uLCD.set_sector_address(0x001D, 0x4C42);
+        uLCD.display_video(0,0);
     }
 }
+
+
