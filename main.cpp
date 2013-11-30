@@ -1,33 +1,12 @@
+// uLCD-144-G2 demo program for uLCD-4GL LCD driver library
 //
-// TFT_4DGL is a class to drive 4D Systems LCD screens
-//
-// Copyright (C) <2010> Stephane ROCHON <stephane.rochon at free.fr>
-//
-// TFT_4DGL is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// TFT_4DGL is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with TFT_4DGL.  If not, see <http://www.gnu.org/licenses/>.
-
 #include "mbed.h"
 #include "uLCD_4DGL.h"
-
-//#define SIZE_X  128
-//#define SIZE_Y  128
-//
 
 uLCD_4DGL uLCD(p9,p10,p11); // serial tx, serial rx, reset pin;
 
 int main()
 {
-
     // basic printf demo = 16 by 18 characters on screen
     uLCD.printf("\nHello uLCD World\n"); //Default Green on black text
     uLCD.printf("\n  Starting Demo...");
@@ -39,12 +18,11 @@ int main()
         uLCD.printf("%2D",i);
         wait(.5);
     }
-
     uLCD.cls();
-
-    uLCD.printf("Change baud rate......");
-    uLCD.baudrate(600000); //jack up baud rate to max for fast display
+    uLCD.printf("Change baudrate......");
+    uLCD.baudrate(3000000); //jack up baud rate to max for fast display
     //if demo hangs here - try lower baud rates
+    //
     // printf text only full screen mode demo
     uLCD.background_color(BLUE);
     uLCD.cls();
@@ -64,10 +42,10 @@ int main()
     uLCD.background_color(BLACK);
     uLCD.cls();
     uLCD.background_color(DGREY);
-    uLCD.circle(60, 50, 30, 0xFF00FF);
+    uLCD.filled_circle(60, 50, 30, 0xFF00FF);
     uLCD.triangle(120, 100, 40, 40, 10, 100, 0x0000FF);
     uLCD.line(0, 0, 80, 60, 0xFF0000);
-    uLCD.rectangle(50, 50, 100, 90, 0x00FF00);
+    uLCD.filled_rectangle(50, 50, 100, 90, 0x00FF00);
     uLCD.pixel(60, 60, BLACK);
     uLCD.read_pixel(120, 70);
     uLCD.circle(120, 60, 10, BLACK);
@@ -93,12 +71,12 @@ int main()
     uLCD.line(0, 127, 0, 0, WHITE);
     for (int i=0; i<1500; i++) {
         //draw ball
-        uLCD.circle(x, y, radius, RED);
+        uLCD.filled_circle(x, y, radius, RED);
         //bounce off edge walls and slow down a bit?
         if ((x<=radius+1) || (x>=126-radius)) vx = -.90*vx;
         if ((y<=radius+1) || (y>=126-radius)) vy = -.90*vy;
         //erase old ball location
-        uLCD.circle(x, y, radius, BLACK);
+        uLCD.filled_circle(x, y, radius, BLACK);
         //move ball
         fx=fx+vx;
         fy=fy+vy;
@@ -111,10 +89,10 @@ int main()
     uLCD.background_color(BLACK);
     uLCD.cls();
 //compute Mandelbrot set image for display
-//image size in pixels and  setup
+//image size in pixels
     const unsigned ImageHeight=128;
     const unsigned ImageWidth=128;
-    //region to display
+    //"c" region to display
     double MinRe = -0.75104;
     double MaxRe = -0.7408;
     double MinIm = 0.10511;
@@ -149,7 +127,7 @@ int main()
     int num_rows=50;
     int frame=0;
     double a,b,c=0.0;
-    while(frame<50) {
+    while(frame<75) {
         for (int k=0; k<num_cols; k++) {
             b= (1+sin(3.14159*k*0.75/(num_cols-1.0)+c))*0.5;
             for (int i=0; i<num_rows; i++) {
@@ -171,14 +149,16 @@ int main()
         if (c > 6.2831) c = 0.0;
         frame++;
     }
+    //Load Image Demo
     uLCD.cls();
     //SD card needed with image and video files for last two demos
-    while(1){}  //remove line, if SD card is used
     uLCD.cls();
     uLCD.media_init();
+    uLCD.printf("\n\nAn SD card is needed for image and video data");
     uLCD.set_sector_address(0x001D, 0x4C01);
     uLCD.display_image(0,0);
     wait(10);
+    //Play video demo
     while(1) {
         uLCD.cls();
         uLCD.media_init();
@@ -186,5 +166,6 @@ int main()
         uLCD.display_video(0,0);
     }
 }
+
 
 
