@@ -5,3 +5,7 @@ compile_commands?json
 ?cache
 mbed
 4DGL-uLCD-SE
+.mbed
+compile_commands.json
+.clangd
+.cache
